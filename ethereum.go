@@ -1,0 +1,4 @@
+package ethereum
+
+func createNewWallet() {
+}
