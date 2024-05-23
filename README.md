@@ -18,7 +18,7 @@
 
 2. mobile
 ```
-    gomobile bind -o ./ethereum.aar
+    gomobile bind -o ./../pocket-app/android/app/lib/ethereum.aar
 ```
 
 

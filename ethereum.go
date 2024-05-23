@@ -29,15 +29,15 @@ func CreatePrivateKey() string {
 }
 
 func InitializeWallet() string {
-	exist := database.CheckDatabase()
-	if exist {
-		return "false"
-	}
+	// exist := database.CheckDatabase()
+	// if exist {
+	//	return "false"
+	// }
 
 	file, err := database.CreateNewWallet()
 	if err != nil {
 		return err.Error()
 	}
 
-	return file.Name()
+	return file
 }
