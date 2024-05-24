@@ -1,43 +1,54 @@
-package ethereum
+package main
 
 import (
+	"fmt"
+
 	"github.com/mindsgn-studio/pocket-wallet-ethereum/database"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/ethereum"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
 )
 
-type Wallet struct {
-	PrivateKey string `json:"privateKey"`
-	Address    string `json:"address"`
-	Network    string `json:"network"`
-	NetworkID  string `json:"networkID"`
-	Provider   string `json:"provider"`
+func WalletExists() bool {
+	return false
 }
 
-func CreatePrivateKey() string {
-	// privateKey, err := crypto.GenerateKey()
-	// if err != nil {
-	//	return "", fmt.Errorf(err.Error())
-	//}
-
-	//privateKeyBytes := crypto.FromECDSA(privateKey)
-	// address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
-
-	// hash := sha3.NewLegacyKeccak256()
-	// hash.Write(publicKeyBytes[1:])
-
-	// return hexutil.Encode(privateKeyBytes), nil
-	return ""
-}
-
-func InitializeWallet() string {
-	// exist := database.CheckDatabase()
-	// if exist {
-	//	return "false"
-	// }
-
-	file, err := database.CreateNewWallet()
-	if err != nil {
-		return err.Error()
+func InitialiseWallet(password string) bool {
+	initialised := database.InitialiseWallet(password)
+	if initialised {
+		logs.LogError("Wallet Initialised")
+		return true
+	} else {
+		logs.LogError("Wallet Failed Initialised")
+		return false
 	}
+}
 
-	return file
+func CreateWallet(name string, password string) bool {
+	switch name {
+	case "ethereum":
+		ethereum.CreateNewEthereumWallet(password)
+		return true
+	default:
+		return false
+	}
+}
+
+func GetWallets(password string) []database.Wallet {
+	responded := database.GetWallets(password)
+	fmt.Println(responded)
+	return responded
+}
+
+func main() {
+	// initialize wallet
+	InitialiseWallet("123456789")
+
+	// create wallet
+	// CreateWallet("ethereum", "123456789")
+
+	// create wallet
+	// CreateWallet("brown", "123456789")
+
+	// create wallet
+	GetWallets("123456789")
 }

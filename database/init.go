@@ -3,87 +3,229 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/joho/godotenv"
+	"github.com/lucsky/cuid"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
+	_ "github.com/mutecomm/go-sqlcipher/v4"
 )
 
-func SaveToFile(data []byte, path string) error {
-	return ioutil.WriteFile(path, data, 0644)
+type Wallet struct {
+	UUID       string `json:"uuid"`
+	Name       string `json:"name"`
+	WalletType string `json:"type"`
+	Address    string `json:"address"`
 }
 
-func CheckDatabase() bool {
-	sqliteDatabase, err := sql.Open("sqlite3", "./wallet.db")
+type Environment struct {
+	Secret      string `json:"secret"`
+	OSType      string `json:"osType"`
+	PackageName string `json:"packageName"`
+}
+
+// Database Queries
+func createWalletTable(db *sql.DB) {
+	createStudentTableSQL := `CREATE TABLE IF NOT EXISTS wallet (
+		"uuid" TEXT NOT NULL PRIMARY KEY,			
+		"name" TEXT NOT NULL,
+		"type" TEXT NOT NULL,
+		"address" TEXT NOT NULL UNIQUE,
+		"private_key" TEXT NOT NULL UNIQUE,
+		"created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		"updated_at" NOT NULL DEFAULT CURRENT_TIMESTAMP
+	  );`
+
+	statement, err := db.Prepare(createStudentTableSQL)
 	if err != nil {
-		fmt.Println(err)
+		logs.LogError(err.Error())
+		return
+	}
+
+	statement.Exec()
+}
+
+func InsertWallet(db *sql.DB, walletType string, private string, address string) bool {
+	insertStudentSQL := `INSERT INTO wallet(type, uuid, name, private_key, address) VALUES (?, ?, ?, ?, ?)`
+
+	statement, err := db.Prepare(insertStudentSQL)
+	if err != nil {
+		logs.LogError(err.Error())
 		return false
 	}
-	fmt.Println(sqliteDatabase)
-	defer sqliteDatabase.Close()
 
-	return false
-}
+	uuid := cuid.New()
 
-func DataDir() (string, error) {
-	dir, err := os.Stat("/data/data/com.wallet/files")
+	_, err = statement.Exec(walletType, uuid, uuid, private, address)
 	if err != nil {
-		return "", err // Handle error if directory doesn't exist
+		logs.LogError(err.Error())
+		return false
 	}
-	if !dir.IsDir() {
-		return "", fmt.Errorf("Path /data/data/%s/files is not a directory", "com.wallet")
-	}
-	return filepath.Join("data", "data", "com.wallet", "files"), nil
+
+	return true
 }
 
-func ConfigExists(filePath string) bool {
+func GetTotalWallet(db *sql.DB) bool {
+	row, err := db.Query("SELECT uuid, SUM(uuid) FROM wallet GROUP BY uuid")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+
+	var totalWallet int = 0
+	for row.Next() {
+		totalWallet++
+	}
+
+	if totalWallet >= 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func GetWallets(password string) []Wallet {
+	var wallets []Wallet
+	directory, err := GetDataDirectory()
+	if err != nil {
+		logs.LogError(err.Error())
+		return wallets
+	}
+
+	db, err := OpenDatabase(directory, password)
+	if err != nil {
+		logs.LogError(err.Error())
+		return wallets
+	}
+
+	rows, err := db.Query("SELECT uuid, name, type, address type FROM wallet")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var w Wallet
+		err := rows.Scan(&w.UUID, &w.Name, &w.WalletType, &w.Address)
+		if err != nil {
+			return wallets
+		}
+		wallets = append(wallets, w)
+	}
+	return wallets
+}
+
+func OpenDatabase(directory string, password string) (*sql.DB, error) {
+	env := getEnvironment()
+	key := url.QueryEscape(password + env.Secret)
+	dbname := fmt.Sprintf(directory+"/wallet.db?_pragma_key='%s'", key)
+	db, err := sql.Open("sqlite3", dbname)
+	if err != nil {
+		logs.LogError(err.Error())
+		return db, fmt.Errorf(err.Error())
+	}
+
+	return db, nil
+}
+
+// functions
+func GetDataDirectory() (string, error) {
+	env := getEnvironment()
+	fileType := env.OSType
+
+	switch fileType {
+	case "macos":
+		return filepath.Join("./.database"), nil
+	case "windows":
+		return filepath.Join("./.database"), nil
+	case "android":
+		dir, err := os.Stat("/data/data/com.wallet/files")
+		if err != nil {
+			return "", err
+		}
+		if !dir.IsDir() {
+			return "", fmt.Errorf("Path /data/data/%s/files is not a directory", "com.wallet")
+		}
+		return filepath.Join("data", "data", "com.wallet", "files"), nil
+	}
+
+	return "./", nil
+}
+
+func directoryExist(filePath string) bool {
 	_, err := os.Stat(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// Config file does not exist
+			logs.LogError(err.Error())
 			return false
 		}
 		return false
 	}
-	// Config file exists
 	return true
 }
 
-func ReadFileContent(filePath string) ([]byte, error) {
-	data, err := ioutil.ReadFile(filePath)
+func WalletExists(password string) bool {
+	directory, err := GetDataDirectory()
 	if err != nil {
-		return nil, fmt.Errorf("error reading file: %w", err)
+		logs.LogError(err.Error())
+		return false
 	}
-	return data, nil
+
+	db, err := OpenDatabase(directory, password)
+	if err != nil {
+		logs.LogError(err.Error())
+		return false
+	}
+
+	exists := GetTotalWallet(db)
+	if exists {
+		return true
+	} else {
+		return false
+	}
 }
 
-func CreateNewWallet() (string, error) {
-	directory, err := DataDir()
+func InitialiseWallet(password string) bool {
+	directory, err := GetDataDirectory()
 	if err != nil {
-		return "", fmt.Errorf(err.Error())
-	}
-	filePath := filepath.Join(directory, "config.txt")
-
-	if ConfigExists(filePath) {
-		data, err := ReadFileContent(filePath)
-		if err != nil {
-			return "", fmt.Errorf(err.Error())
-		}
-
-		return string(data), nil
-	} else {
-		created := os.MkdirAll(directory, os.ModePerm)
-		if created != nil {
-			return "", fmt.Errorf(created.Error())
-		}
-
-		data := []byte("This is some configuration data")
-
-		err = SaveToFile(data, filePath)
-		if err != nil {
-			return "", fmt.Errorf(err.Error())
-		}
-
-		return "saved to file", nil
+		logs.LogError(err.Error())
+		return false
 	}
 
+	exist := directoryExist(directory)
+	if exist {
+		return true
+	}
+
+	created := os.MkdirAll(directory, os.ModePerm)
+	if created != nil {
+		logs.LogError(err.Error())
+		return false
+	}
+
+	db, err := OpenDatabase(directory, password)
+	if err != nil {
+		logs.LogError(err.Error())
+		return false
+	}
+	defer db.Close()
+
+	createWalletTable(db)
+
+	return true
+}
+
+func getEnvironment() Environment {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	return Environment{
+		PackageName: os.Getenv("PACKAGE_NAME"),
+		OSType:      os.Getenv("OS_TYPE"),
+		Secret:      os.Getenv("SECRET"),
+	}
 }
