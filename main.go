@@ -36,10 +36,11 @@ func GetWallets(password string) []database.Wallet {
 	return wallets
 }
 
-func main() {
-	// initialize wallet
-	InitialiseWallet("123456789")
+func GetTotalBalance(password string) {
+	ethereum.GetTotalBalance(password, "testnet")
+}
 
-	// create wallet
-	GetWallets("123456789")
+func main() {
+	InitialiseWallet("123456789")
+	GetTotalBalance("123456789")
 }

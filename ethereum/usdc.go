@@ -1,0 +1,3 @@
+package ethereum
+
+func GetUSDCBalace() {}
