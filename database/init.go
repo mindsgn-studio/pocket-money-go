@@ -10,7 +10,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/lucsky/cuid"
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
+	"github.com/mindsgn-studio/pocket-money-go/logs"
 	_ "github.com/mutecomm/go-sqlcipher/v4"
 )
 

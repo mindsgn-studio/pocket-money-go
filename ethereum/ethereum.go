@@ -6,8 +6,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/database"
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
+	"github.com/mindsgn-studio/pocket-money-go/database"
+	"github.com/mindsgn-studio/pocket-money-go/logs"
 )
 
 func CreateNewEthereumWallet(password string) bool {
