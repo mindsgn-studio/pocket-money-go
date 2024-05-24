@@ -1,1 +1,4 @@
-ethereum_test.go
+test
+tmp
+.database
+.env

@@ -1,18 +1,54 @@
-package ethereum
+package main
 
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/database"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/ethereum"
+	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
 )
 
-func CreateNewWallet() (string, error) {
-	privateKey, err := crypto.GenerateKey()
-	if err != nil {
-		return "", fmt.Errorf(err.Error())
-	}
+func WalletExists() bool {
+	return false
+}
 
-	privateKeyBytes := crypto.FromECDSA(privateKey)
-	return hexutil.Encode(privateKeyBytes), nil
+func InitialiseWallet(password string) bool {
+	initialised := database.InitialiseWallet(password)
+	if initialised {
+		logs.LogError("Wallet Initialised")
+		return true
+	} else {
+		logs.LogError("Wallet Failed Initialised")
+		return false
+	}
+}
+
+func CreateWallet(name string, password string) bool {
+	switch name {
+	case "ethereum":
+		ethereum.CreateNewEthereumWallet(password)
+		return true
+	default:
+		return false
+	}
+}
+
+func GetWallets(password string) []database.Wallet {
+	responded := database.GetWallets(password)
+	fmt.Println(responded)
+	return responded
+}
+
+func main() {
+	// initialize wallet
+	InitialiseWallet("123456789")
+
+	// create wallet
+	// CreateWallet("ethereum", "123456789")
+
+	// create wallet
+	// CreateWallet("brown", "123456789")
+
+	// create wallet
+	GetWallets("123456789")
 }
