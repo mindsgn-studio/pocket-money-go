@@ -1,4 +1,4 @@
-module github.com/mindsgn-studio/pocket-wallet-ethereum
+module github.com/mindsgn-studio/pocket-money-go
 
 go 1.22.3
 

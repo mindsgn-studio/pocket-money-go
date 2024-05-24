@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/database"
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/ethereum"
-	"github.com/mindsgn-studio/pocket-wallet-ethereum/logs"
+	"github.com/mindsgn-studio/pocket-money-go/database"
+	"github.com/mindsgn-studio/pocket-money-go/ethereum"
+	"github.com/mindsgn-studio/pocket-money-go/logs"
 )
 
 func WalletExists() bool {
@@ -34,20 +32,13 @@ func CreateWallet(name string, password string) bool {
 }
 
 func GetWallets(password string) []database.Wallet {
-	responded := database.GetWallets(password)
-	fmt.Println(responded)
-	return responded
+	wallets := database.GetWallets(password)
+	return wallets
 }
 
 func main() {
 	// initialize wallet
 	InitialiseWallet("123456789")
-
-	// create wallet
-	// CreateWallet("ethereum", "123456789")
-
-	// create wallet
-	// CreateWallet("brown", "123456789")
 
 	// create wallet
 	GetWallets("123456789")
