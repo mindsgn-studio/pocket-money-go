@@ -99,6 +99,7 @@ func ConvertBody(body []byte) (MarketData, error) {
 func GetTotalBalance(password string, network string) (Wallets, error) {
 	total := float64(0)
 	var userWallet Wallets
+
 	if network == "mainnet" {
 		for _, networkDetails := range NetworkMainnetList {
 			fmt.Println(networkDetails)
@@ -137,6 +138,17 @@ func GetTotalBalance(password string, network string) (Wallets, error) {
 				}
 
 				total += data.Data.Price * cryptoBalance
+
+				walletData := Wallet{
+					Address:      wallet.Address,
+					Blockchain:   wallet.Name,
+					BlockchainId: wallet.Name,
+					Decimals:     18,
+					Currency:     "USD",
+					FiatBalance:  cryptoBalance * data.Data.Price,
+				}
+
+				userWallet.Wallets = append(userWallet.Wallets, walletData)
 			}
 		}
 	}
