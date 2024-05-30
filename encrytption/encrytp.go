@@ -1,0 +1,4 @@
+package encrytption
+
+func Encrypt() {
+}

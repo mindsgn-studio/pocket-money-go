@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/mindsgn-studio/pocket-money-go/database"
 	"github.com/mindsgn-studio/pocket-money-go/ethereum"
 	"github.com/mindsgn-studio/pocket-money-go/logs"
@@ -36,10 +38,16 @@ func GetWallets(password string) []database.Wallet {
 	return wallets
 }
 
-func main() {
-	// initialize wallet
-	InitialiseWallet("123456789")
+func GetTotalBalance(password string) {
+	wallets, err := ethereum.GetTotalBalance(password, "testnet")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	// create wallet
-	GetWallets("123456789")
+	fmt.Println(wallets)
+}
+
+func main() {
+	InitialiseWallet("123456789")
+	GetTotalBalance("123456789")
 }
