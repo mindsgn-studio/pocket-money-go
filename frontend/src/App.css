@@ -1,0 +1,81 @@
+#app {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    padding-left: 50px;
+}
+
+#app-loading{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #EDEAE4;    
+}
+
+#app-home{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #EDEAE4;    
+}
+
+#navigation{
+    width: 100px;
+    height: 95vh;
+    background-color: black;
+    border-radius: 10px;
+    margin-right: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+#navigation-button{
+}
+
+#main{
+    width: 80vw;
+    min-height: 100vh;
+}
+
+#main-navigation{
+    width: 100%;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+#balance-card{
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    border: 1px solid #908C87;
+    text-align: left;
+    margin-right: 50px;
+    padding: 20px;
+}
+
+#details-card{
+    text-align: left;
+}
+
+#transaction-card{
+    text-align: left;
+}
+
+#logo{
+    background-image: url("./assets//images/logo.png");
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+}
