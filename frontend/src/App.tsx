@@ -1,3 +1,4 @@
+import './style.css';
 import './App.css';
 import { ChakraProvider } from '@chakra-ui/react'
 import {
@@ -8,7 +9,7 @@ import {
 import Loading from './screen/loading';
 import Home from './screen/home';
 import Verify from './screen/verify';
-import Onboarding from "./screen/onbaording"
+import Onboarding from "./screen/onboarding"
 import { WalletProvider } from './context';
 
 const router = createBrowserRouter([

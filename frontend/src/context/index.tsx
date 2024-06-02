@@ -9,13 +9,19 @@ import React, {
   interface Wallet {
     isReady: boolean;
     auth: boolean;
-    walletExist: () => boolean
+    walletExist: () => boolean,
+    createNewWallet: () => void,
+    createCode: () => void,
+    verifyCode: () => void,
   }
   
   const WalletContext = createContext<Wallet>({
     isReady: false,
     auth: false,
-    walletExist: () => false
+    walletExist: () => false,
+    createNewWallet: () => {},
+    createCode: () => {},
+    verifyCode: () => {}
   });
   
   function useWallet(): any {
@@ -54,6 +60,9 @@ import React, {
         }
     }
 
+    const createNewWallet = () => {
+    }
+
     useEffect(() => {
         setTimeout(()=> {
             setIsReady(true)
@@ -66,7 +75,10 @@ import React, {
         value={{
             isReady,
             auth,
-            walletExist
+            walletExist,
+            createNewWallet,
+            createCode,
+            verifyCode,
         }}
       />
     );
