@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/mindsgn-studio/pocket-money-go/database"
@@ -22,7 +21,7 @@ func NewApp() *App {
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
-func (a *App) StartUp(ctx context.Context) {
+func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
@@ -59,8 +58,9 @@ func (a *App) GetWallets(password string) []database.Wallet {
 	return wallets
 }
 
-func (a *App) WalletExists() (bool, error) {
-	return false, errors.New("Wallet not found")
+func (a *App) WalletExists() bool {
+	//exist :=
+	return false
 }
 
 func (a *App) GetTotalBalance(password string) {

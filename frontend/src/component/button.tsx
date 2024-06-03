@@ -1,7 +1,6 @@
 import { Button as DefaultButton, Text } from '@chakra-ui/react'
 
 function Button(props: any) {
-    console.log(props)
     return (
         <DefaultButton
             onClick={props.onClick}

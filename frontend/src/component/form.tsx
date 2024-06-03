@@ -5,6 +5,7 @@ import { Box, PinInput, PinInputField, HStack, Heading, Center} from "@chakra-ui
 function NewWalletForm() {
     const [step, setStep] = useState<number>(1)
     const [passcode, setPasscode] = useState<string>("")
+    const [message, setMessage] = useState<string>("")
     const [verify, setVerify] = useState<string>("")
 
     const next = () => {
@@ -18,7 +19,6 @@ function NewWalletForm() {
     }
 
     const verifyCode = () => {
-        window.location.href = "/home"
     }
 
     return (
@@ -31,7 +31,8 @@ function NewWalletForm() {
                         fontFamily={"SF Rounded Regular"}
                         size={"sm"}
                         color="#908C87">
-                        Create New Passcode
+                        
+                        {message}
                     </Heading>
 
                     <Center>
@@ -53,7 +54,7 @@ function NewWalletForm() {
                         fontFamily={"SF Rounded Regular"}
                         size={"sm"}
                         color="#908C87">
-                       Verify Passcode
+                       {message}
                     </Heading>
 
                     <Center>
