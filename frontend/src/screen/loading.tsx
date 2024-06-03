@@ -6,17 +6,10 @@ import { useWallet } from "../context";
 function Loading() {
     const {isReady, auth, walletExist} = useWallet()
 
-
     useEffect(() => {
         if(isReady){
-            const exists = walletExist()
-            if(exists){
-                window.location.href ="/verify"
-            }else{
-                window.location.href ="/onboarding"
-            }
-
-        }   
+            walletExist()
+        }
     },[isReady])
 
     return (

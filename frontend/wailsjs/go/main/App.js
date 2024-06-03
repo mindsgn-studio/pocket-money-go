@@ -18,6 +18,10 @@ export function InitialiseWallet(arg1) {
   return window['go']['main']['App']['InitialiseWallet'](arg1);
 }
 
+export function OnDomReady(arg1) {
+  return window['go']['main']['App']['OnDomReady'](arg1);
+}
+
 export function WalletExists() {
   return window['go']['main']['App']['WalletExists']();
 }

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import './style.css';
 import './App.css';
 import { ChakraProvider } from '@chakra-ui/react'
 import {
@@ -8,8 +10,9 @@ import {
 import Loading from './screen/loading';
 import Home from './screen/home';
 import Verify from './screen/verify';
-import Onboarding from "./screen/onbaording"
+import Onboarding from "./screen/onboarding"
 import { WalletProvider } from './context';
+import { CookiesProvider } from 'react-cookie'
 
 const router = createBrowserRouter([
     {
@@ -34,7 +37,9 @@ function App() {
     return (
         <WalletProvider>
             <ChakraProvider>
-                <RouterProvider router={router} />
+                <CookiesProvider>
+                    <RouterProvider router={router} />
+                </CookiesProvider>
             </ChakraProvider>
         </WalletProvider>
     )
