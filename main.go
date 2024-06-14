@@ -49,5 +49,6 @@ func GetTotalBalance(password string) {
 
 func main() {
 	InitialiseWallet("123456789")
+	// CreateWallet("ethereum", "123456789")
 	GetTotalBalance("123456789")
 }
