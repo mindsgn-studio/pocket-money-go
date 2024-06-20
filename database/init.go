@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/NethermindEth/juno/core/felt"
+	"github.com/NethermindEth/starknet.go/utils"
 	"github.com/joho/godotenv"
 	"github.com/lucsky/cuid"
 	"github.com/mindsgn-studio/pocket-money-go/logs"
@@ -165,18 +166,18 @@ func GetWallets(password string) []Wallet {
 	return wallets
 }
 
-func GetStarknet(password string) []Starkent {
+func GetStarknet(password string) *felt.Felt {
 	var wallets []Starkent
 	directory, err := GetDataDirectory()
 	if err != nil {
 		logs.LogError(err.Error())
-		return wallets
+		return nil
 	}
 
 	db, err := OpenDatabase(directory, password)
 	if err != nil {
 		logs.LogError(err.Error())
-		return wallets
+		return nil
 	}
 
 	rows, err := db.Query("SELECT precomputed_address FROM starknet")
@@ -188,12 +189,18 @@ func GetStarknet(password string) []Starkent {
 		var w Starkent
 		err := rows.Scan(&w.PrecomputedAddress)
 		if err != nil {
-			return wallets
+			return nil
 		}
 		wallets = append(wallets, w)
 	}
-	fmt.Println(wallets[0].PrecomputedAddress)
-	return wallets
+	address, err := utils.HexToFelt(wallets[0].PrecomputedAddress)
+	if err != nil {
+		logs.LogError(err.Error())
+	}
+
+	// starknet.GetEthBalance(address)
+
+	return address
 }
 
 func OpenDatabase(directory string, password string) (*sql.DB, error) {
