@@ -47,7 +47,12 @@ func GetTotalBalance(password string) {
 	fmt.Println(wallets)
 }
 
+func SendPayment(password string, wallet string) {
+	ethereum.SendNativePayment()
+}
+
 func main() {
 	InitialiseWallet("123456789")
 	GetTotalBalance("123456789")
+	SendPayment("123456789", "")
 }
