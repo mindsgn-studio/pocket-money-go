@@ -2,3 +2,4 @@ test
 tmp
 .database
 .env
+frontend/node_modules

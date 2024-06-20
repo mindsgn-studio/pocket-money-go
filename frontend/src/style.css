@@ -1,0 +1,52 @@
+html {
+    background-color: rgba(27, 38, 54, 1);
+    text-align: center;
+    background-color: #EDEAE4;    
+    cursor: pointer
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    overflow: hidden;
+    color: black;
+    font-family: "SF Rounded Bold", "SF Rounded Bold", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+p {
+    font-family: "SF Rounded Regular";
+    color: #908C87;
+    margin: 0;
+}
+
+h1 {
+    font-family: "SF Rounded Bold";
+    margin: 0;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: left;
+    margin-top: 20px;
+}
+
+@font-face {
+    font-family: "SF Rounded Bold";
+    font-style: normal;
+    font-weight: 400;
+    src: local(""),
+    url("assets/fonts/SF-Pro-Rounded-Bold.otf");
+}
+
+@font-face {
+    font-family: "SF Rounded Regular";
+    font-style: normal;
+    font-weight: 400;
+    src: local(""),
+    url("assets/fonts/SF-Pro-Rounded-Regular.otf");
+}
