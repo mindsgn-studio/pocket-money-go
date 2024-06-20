@@ -6,6 +6,7 @@ import (
 	"github.com/mindsgn-studio/pocket-money-go/database"
 	"github.com/mindsgn-studio/pocket-money-go/ethereum"
 	"github.com/mindsgn-studio/pocket-money-go/logs"
+	"github.com/mindsgn-studio/pocket-money-go/starknet"
 )
 
 func WalletExists() bool {
@@ -49,5 +50,10 @@ func GetTotalBalance(password string) {
 
 func main() {
 	InitialiseWallet("123456789")
-	GetTotalBalance("123456789")
+	// CreateWallet("ethereum", "123456789")
+	// GetTotalBalance("123456789")
+	// starknet.CreateNewWallet("123456789")
+	address := database.GetStarknet("123456789")
+	fmt.Println(address)
+	starknet.GetEthBalance(address.String())
 }

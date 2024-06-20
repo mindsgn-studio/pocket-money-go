@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/NethermindEth/juno/core/felt"
+	"github.com/NethermindEth/starknet.go/utils"
 	"github.com/joho/godotenv"
 	"github.com/lucsky/cuid"
 	"github.com/mindsgn-studio/pocket-money-go/logs"
@@ -19,6 +21,10 @@ type Wallet struct {
 	Name       string `json:"name"`
 	WalletType string `json:"type"`
 	Address    string `json:"address"`
+}
+
+type Starkent struct {
+	PrecomputedAddress string `json:"precomputed_address"`
 }
 
 type Environment struct {
@@ -48,6 +54,28 @@ func createWalletTable(db *sql.DB) {
 	statement.Exec()
 }
 
+func createStakrnetTable(db *sql.DB) {
+	createStudentTableSQL := `CREATE TABLE IF NOT EXISTS starknet (
+		"uuid" TEXT NOT NULL PRIMARY KEY,			
+		"precomputed_address" TEXT NOT NULL,
+		"cairo_version" TEXT NOT NULL,
+		"chain_id" TEXT NOT NULL UNIQUE,
+		"account_address" TEXT NOT NULL UNIQUE,
+		"public" TEXT NOT NULL UNIQUE,
+		"private" TEXT NOT NULL UNIQUE,
+		"created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		"updated_at" NOT NULL DEFAULT CURRENT_TIMESTAMP
+	  ); `
+
+	statement, err := db.Prepare(createStudentTableSQL)
+	if err != nil {
+		logs.LogError(err.Error())
+		return
+	}
+
+	statement.Exec()
+}
+
 func InsertWallet(db *sql.DB, walletType string, private string, address string) bool {
 	insertStudentSQL := `INSERT INTO wallet(type, uuid, name, private_key, address) VALUES (?, ?, ?, ?, ?)`
 
@@ -64,6 +92,27 @@ func InsertWallet(db *sql.DB, walletType string, private string, address string)
 		logs.LogError(err.Error())
 		return false
 	}
+
+	return true
+}
+
+func InsertStarknet(db *sql.DB, precomputedAddress *felt.Felt, cairoVersion int, chainID *felt.Felt, accountAddress *felt.Felt, public *felt.Felt, private *felt.Felt) bool {
+	insertSQL := `INSERT INTO starknet(uuid, precomputed_address, cairo_version, chain_id, account_address, public, private) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	uuid := cuid.New()
+
+	statement, err := db.Prepare(insertSQL)
+	if err != nil {
+		logs.LogError(err.Error())
+		return false
+	}
+
+	query, err := statement.Exec(uuid, precomputedAddress.String(), cairoVersion, chainID.String(), accountAddress.String(), public.String(), private.String())
+	if err != nil {
+		logs.LogError(err.Error())
+		return false
+	}
+
+	fmt.Println(query)
 
 	return true
 }
@@ -115,6 +164,43 @@ func GetWallets(password string) []Wallet {
 		wallets = append(wallets, w)
 	}
 	return wallets
+}
+
+func GetStarknet(password string) *felt.Felt {
+	var wallets []Starkent
+	directory, err := GetDataDirectory()
+	if err != nil {
+		logs.LogError(err.Error())
+		return nil
+	}
+
+	db, err := OpenDatabase(directory, password)
+	if err != nil {
+		logs.LogError(err.Error())
+		return nil
+	}
+
+	rows, err := db.Query("SELECT precomputed_address FROM starknet")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var w Starkent
+		err := rows.Scan(&w.PrecomputedAddress)
+		if err != nil {
+			return nil
+		}
+		wallets = append(wallets, w)
+	}
+	address, err := utils.HexToFelt(wallets[0].PrecomputedAddress)
+	if err != nil {
+		logs.LogError(err.Error())
+	}
+
+	// starknet.GetEthBalance(address)
+
+	return address
 }
 
 func OpenDatabase(directory string, password string) (*sql.DB, error) {
@@ -213,6 +299,7 @@ func InitialiseWallet(password string) bool {
 	defer db.Close()
 
 	createWalletTable(db)
+	createStakrnetTable(db)
 
 	return true
 }
